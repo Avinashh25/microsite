@@ -1,0 +1,271 @@
+/* ================================================================
+   TestimonialsSlider.css
+   Click-to-advance, no blur, side card text visible at low opacity.
+   ================================================================ */
+
+.ts-slider {
+  --ts-card-width: min(28vw, 340px);
+  --ts-card-aspect: 3 / 4;
+  --ts-transition-dur: 800ms;
+  --ts-transition-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0 32px;
+  position: relative;
+}
+
+.ts-slides__wrapper {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  place-items: center;
+}
+
+.ts-slides {
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.ts-slides > * {
+  grid-area: 1 / -1;
+}
+
+.ts-slide {
+  --ts-tx: 0px;
+  --ts-tz: 0px;
+  --ts-rotY: 0deg;
+  --ts-scale: 1;
+
+  container-type: inline-size;
+  width: var(--ts-card-width);
+  aspect-ratio: var(--ts-card-aspect);
+  perspective: 800px;
+  user-select: none;
+  position: relative;
+
+  transform:
+    perspective(1000px)
+    translate3d(var(--ts-tx), 0, var(--ts-tz))
+    rotateY(var(--ts-rotY))
+    scale(var(--ts-scale));
+
+  transition:
+    transform var(--ts-transition-dur) var(--ts-transition-ease),
+    opacity var(--ts-transition-dur) var(--ts-transition-ease),
+    filter var(--ts-transition-dur) var(--ts-transition-ease);
+}
+
+.ts-slide[data-state='current'] {
+  --ts-scale: 1.18;
+  --ts-tx: 0px;
+  --ts-tz: 0px;
+  --ts-rotY: 0deg;
+
+  opacity: 1;
+  filter: brightness(1);
+  z-index: 20;
+  pointer-events: auto;
+}
+
+.ts-slide[data-state='next'] {
+  --ts-tx: calc(var(--ts-card-width) * 1.07);
+  --ts-rotY: -45deg;
+  --ts-scale: 1;
+
+  opacity: 0.65;
+  filter: brightness(0.7);
+  z-index: 10;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.ts-slide[data-state='previous'] {
+  --ts-tx: calc(-1 * var(--ts-card-width) * 1.07);
+  --ts-rotY: 45deg;
+  --ts-scale: 1;
+
+  opacity: 0.65;
+  filter: brightness(0.7);
+  z-index: 10;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.ts-slide[data-state='next']:hover,
+.ts-slide[data-state='previous']:hover {
+  opacity: 0.88;
+  filter: brightness(0.9);
+  --ts-scale: 1.05;
+}
+
+.ts-slide__inner {
+  --rotX: 0deg;
+  --rotY: 0deg;
+
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rotX)) rotateY(var(--rotY));
+  transition: transform 0.1s linear;
+
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  padding: 36px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  box-shadow:
+    0 4px 32px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+}
+
+.ts-slide__inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.ts-slide__qq {
+  position: absolute;
+  top: 18px;
+  left: 24px;
+  font-size: 5rem;
+  line-height: 1;
+  font-family: var(--f-d, 'Space Grotesk', 'Inter', sans-serif);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.09);
+  pointer-events: none;
+  user-select: none;
+}
+
+.ts-slide__text-wrapper {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ts-slide--text {
+  overflow: visible;
+}
+
+.ts-slide--text span {
+  display: block;
+  transition:
+    opacity var(--ts-transition-dur) var(--ts-transition-ease),
+    transform var(--ts-transition-dur) var(--ts-transition-ease);
+}
+
+.ts-slide[data-state='current'] .ts-slide--text span {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition-delay: 250ms;
+}
+
+.ts-slide:not([data-state='current']) .ts-slide--text span {
+  opacity: 0.45;
+  transform: translate3d(0, 0, 0);
+  transition-delay: 0ms;
+}
+
+.ts-slide--quote span {
+  font-family: var(--f-d, 'Inter', sans-serif);
+  font-size: clamp(0.8rem, 1.5cqw, 0.92rem);
+  font-weight: 400;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.82);
+  white-space: normal;
+}
+
+.ts-slide--name span {
+  font-family: var(--f-d, 'Space Grotesk', 'Inter', sans-serif);
+  font-size: clamp(0.88rem, 1.8cqw, 1rem);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.01em;
+  margin-top: 4px;
+}
+
+.ts-slide--role span {
+  font-family: var(--f-d, 'Inter', sans-serif);
+  font-size: clamp(0.7rem, 1.2cqw, 0.78rem);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.02em;
+}
+
+.ts-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.ts-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition:
+    background 300ms ease,
+    width 300ms ease;
+}
+
+.ts-dot--active {
+  background: rgba(255, 255, 255, 0.85);
+  width: 22px;
+  border-radius: 4px;
+}
+
+.ts-dot:hover:not(.ts-dot--active) {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.ts-dot:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+  .ts-slider {
+    --ts-card-width: min(72vw, 320px);
+  }
+
+  .ts-slide[data-state='next'],
+  .ts-slide[data-state='previous'] {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ts-slide {
+    transition-duration: 0.01ms;
+  }
+
+  .ts-slide--text span {
+    transition-duration: 0.01ms;
+    transition-delay: 0ms !important;
+  }
+
+  .ts-slide[data-state='next']:hover,
+  .ts-slide[data-state='previous']:hover {
+    --ts-scale: 1;
+  }
+}
