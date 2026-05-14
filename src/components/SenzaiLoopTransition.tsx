@@ -20,10 +20,6 @@ export function SenzaiLoopTransition() {
     offset: ['start start', 'end end'],
   });
 
-  // Top-level transforms for timeline line
-  const tlHeight  = useTransform(scrollYProgress, [0.45, 0.9], [0, 210]);
-  const tlOpacity = useTransform(scrollYProgress, [0.45, 0.5], [0, 1]);
-
   return (
     <div
       ref={containerRef}
@@ -33,19 +29,7 @@ export function SenzaiLoopTransition() {
       <div className="loop-transition-sticky">
         <div className="loop-transition-stage">
 
-          {/* Timeline line */}
-          <motion.div
-            className="tl-line"
-            style={{ height: tlHeight, opacity: tlOpacity }}
-          />
-
-          {/* Timeline dot */}
-          <motion.div
-            className="tl-dot"
-            style={{ top: 134, opacity: tlOpacity }}
-          />
-
-          {/* Cards — horizontal → vertical */}
+          {/* Cards — horizontal → vertical nav list */}
           {STEPS.map((step, i) => (
             <TransitionCard
               key={step.num}
@@ -55,12 +39,13 @@ export function SenzaiLoopTransition() {
             />
           ))}
 
-          {/* Nav labels that fade in as cards dissolve */}
+          {/* Nav items that fade in as cards dissolve */}
           {STEPS.map((step, i) => (
             <NavItem
               key={`nav-${step.num}`}
               label={step.label}
               index={i}
+              isFirst={i === 0}
               progress={scrollYProgress}
             />
           ))}
@@ -70,6 +55,16 @@ export function SenzaiLoopTransition() {
     </div>
   );
 }
+
+/* ─── Card width / gap constants ─────────────────────────────────────────── */
+const CARD_W = 140;   // initial card width
+const CARD_H = 72;    // initial card height
+const CARD_GAP = 8;   // gap between cards in start state
+
+/* Final sidebar position (mirrors PlatformRail exactly) */
+const NAV_LEFT = 32;  // padding-left of the sidebar
+const NAV_TOP  = 60;  // top offset of first nav item
+const NAV_GAP  = 44;  // vertical gap between nav items
 
 /* ─── TransitionCard ──────────────────────────────────────────────────────── */
 function TransitionCard({
@@ -83,19 +78,28 @@ function TransitionCard({
 }) {
   const p1Range: [number, number] = [0, 0.6];
 
+  // Cards dissolve one by one, staggered
   const dissolveStart = clamp01(0.45 + index * 0.04);
-  const dissolveEnd   = clamp01(dissolveStart + 0.18); // was 0.2 — safely inside [0,1]
+  const dissolveEnd   = clamp01(dissolveStart + 0.18);
 
-  const startX = 16 + index * 210;
-  const startY = 60;
-  const destX  = 40;
-  const destY  = 140 + index * 52;
+  // Start position: tightly packed horizontal row at top-left (0 offset)
+  const startX = index * (CARD_W + CARD_GAP);
+  const startY = 0;
+
+  // End position: vertical list matching sidebar layout
+  const destX = NAV_LEFT - 10; // slightly left so border fade looks natural
+  const destY = NAV_TOP + index * NAV_GAP - 8;
 
   const left    = useTransform(progress, p1Range, [startX, destX]);
   const top     = useTransform(progress, p1Range, [startY, destY]);
-  const width   = useTransform(progress, p1Range, [190, 150]);
-  const height  = useTransform(progress, p1Range, [130, 48]);
-  const opacity = useTransform(progress, [dissolveStart, dissolveEnd], [1, 0]);
+  const width   = useTransform(progress, p1Range, [CARD_W, 120]);
+  const height  = useTransform(progress, p1Range, [CARD_H, 32]);
+
+  // Border / background fade out mid-way through the animation
+  const borderOpacity = useTransform(progress, [0, 0.35, 0.6], [1, 0.4, 0]);
+  const bgOpacity     = useTransform(progress, [0, 0.35, 0.6], [1, 0.3, 0]);
+  const cardOpacity   = useTransform(progress, [dissolveStart, dissolveEnd], [1, 0]);
+
   const pointerEvents = useTransform(
     progress,
     (v) => (v < dissolveEnd ? 'auto' : 'none'),
@@ -109,48 +113,64 @@ function TransitionCard({
         top,
         width,
         height,
-        opacity,
+        opacity: cardOpacity,
         pointerEvents: pointerEvents as MotionValue<'auto' | 'none'>,
+        borderColor: borderOpacity as unknown as string,
+        background: bgOpacity as unknown as string,
       }}
     >
-      <span className="card-num">{step.num}</span>
-      <span className="card-label">{step.label}</span>
+      <motion.span
+        className="card-num"
+        style={{ opacity: useTransform(progress, [0, 0.4], [1, 0]) }}
+      >
+        {step.num}
+      </motion.span>
+      <motion.span
+        className="card-label"
+        style={{ opacity: useTransform(progress, [0.2, 0.58], [1, 0]) }}
+      >
+        {step.label}
+      </motion.span>
     </motion.div>
   );
 }
 
 /* ─── NavItem ─────────────────────────────────────────────────────────────── */
 /**
- * Stagger: 5 items in [0.45 … 1.0] = 0.55 range.
- * Each item gets a 0.18 fade-in window with 0.085 stagger between starts.
- * Worst case: start[4] = 0.45 + 4×0.085 = 0.79, end[4] = 0.97  ✓ within [0,1]
+ * Fades in as a plain sidebar text item — exactly matching PlatformRail style.
+ * First item (Decide) gets the glowing dot bullet.
  */
 function NavItem({
   label,
   index,
+  isFirst,
   progress,
 }: {
   label: string;
   index: number;
+  isFirst: boolean;
   progress: MotionValue<number>;
 }) {
   const start = clamp01(0.45 + index * 0.085);
   const end   = clamp01(start + 0.18);
 
   const opacity = useTransform(progress, [start, end], [0, 1]);
-  const x       = useTransform(progress, [start, end], [-16, 0]);
+  const x       = useTransform(progress, [start, end], [-10, 0]);
 
   return (
     <motion.div
-      className="nav-item-transition"
+      className={`lt-nav-item${isFirst ? ' lt-nav-item--active' : ''}`}
       style={{
-        top: 140 + index * 52,
-        left: 40,
+        top: NAV_TOP + index * NAV_GAP,
+        left: NAV_LEFT,
         opacity,
         x,
       }}
     >
-      {label}
+      <span className="lt-nav-dot-wrap" aria-hidden="true">
+        {isFirst && <span className="lt-nav-dot" />}
+      </span>
+      <span className="lt-nav-label">{label}</span>
     </motion.div>
   );
 }

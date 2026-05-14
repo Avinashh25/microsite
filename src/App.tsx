@@ -11,7 +11,6 @@ import { AiEnergyFlowOverlay } from './components/AiEnergyFlowOverlay';
 import { AiOpportunityRadar } from './components/AiOpportunityRadar';
 import { TestimonialsSlider } from './components/TestimonialsSlider';
 import { PlatformRail } from './components/PlatformRail';
-import { SenzaiLoopTransition } from './components/SenzaiLoopTransition';
 
 // ─── PipelineArc ─────────────────────────────────────────────────────────────
 const PIPELINE_LABELS = [
@@ -816,7 +815,21 @@ export default function App() {
         </motion.div>
       </motion.div>
 
-      <SenzaiLoopTransition />
+      {/* Static 5 step cards */}
+      <motion.div className="loop-steps" variants={staggerItem}>
+        {[
+          { num: '01', label: 'Decide' },
+          { num: '02', label: 'Design' },
+          { num: '03', label: 'Accelerate' },
+          { num: '04', label: 'Govern' },
+          { num: '05', label: 'Reuse' },
+        ].map((s) => (
+          <div className="loop-step" key={s.num}>
+            <span className="ls-n">{s.num}</span>
+            <span className="ls-t">{s.label}</span>
+          </div>
+        ))}
+      </motion.div>
     </motion.div>
   </motion.section>
 

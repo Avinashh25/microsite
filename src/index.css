@@ -2885,48 +2885,12 @@ h3 {
   max-width: min(1120px, calc(100vw - 72px));
   margin: 0 auto;
   min-height: clamp(520px, 78vh, 760px);
-  border: 1px solid rgba(142, 199, 230, 0.14);
-  border-radius: 22px;
-  background:
-    linear-gradient(120deg, rgba(11, 20, 42, 0.82) 0%, rgba(9, 15, 34, 0.72) 48%, rgba(10, 18, 40, 0.82) 100%),
-    radial-gradient(120% 120% at 85% 8%, rgba(84, 154, 215, 0.14) 0%, rgba(84, 154, 215, 0) 55%);
-  backdrop-filter: blur(12px) saturate(1.06);
-  box-shadow:
-    0 22px 70px rgba(3, 7, 18, 0.6),
-    inset 0 1px 0 rgba(180, 228, 255, 0.05);
-  overflow: hidden;
-}
-
-.stage-inner::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: clamp(64px, 9.2vw, 108px);
-  width: 1px;
-  background: linear-gradient(
-    180deg,
-    rgba(120, 192, 235, 0.06) 0%,
-    rgba(146, 212, 247, 0.26) 28%,
-    rgba(146, 212, 247, 0.22) 72%,
-    rgba(120, 192, 235, 0.06) 100%
-  );
-  pointer-events: none;
-}
-
-.stage-inner::after {
-  content: '';
-  position: absolute;
-  left: clamp(60px, 8.8vw, 104px);
-  top: 108px;
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(162, 231, 255, 0.9);
-  box-shadow:
-    0 0 0 2px rgba(98, 170, 214, 0.25),
-    0 0 22px rgba(126, 202, 233, 0.42);
-  pointer-events: none;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  backdrop-filter: none;
+  box-shadow: none;
+  overflow: visible;
 }
 
 .split {
@@ -2936,8 +2900,8 @@ h3 {
 }
 
 .split-copy {
-  max-width: 520px;
-  padding-left: clamp(74px, 9vw, 112px);
+  max-width: 560px;
+  padding-left: clamp(20px, 3vw, 40px);
   padding-top: clamp(22px, 2.3vw, 34px);
   padding-bottom: clamp(22px, 2.3vw, 34px);
 }
@@ -2949,7 +2913,7 @@ h3 {
 .section-head,
 .loop-hero-inner,
 .cta-inner {
-  padding-left: clamp(74px, 9vw, 112px);
+  padding-left: clamp(20px, 3vw, 40px);
   padding-right: clamp(20px, 2.2vw, 30px);
 }
 
@@ -3003,7 +2967,7 @@ h3 {
   .section-head,
   .loop-hero-inner,
   .cta-inner {
-    padding-left: clamp(56px, 6vw, 80px);
+    padding-left: clamp(32px, 4vw, 56px);
   }
 }
 
@@ -3015,16 +2979,9 @@ h3 {
     padding-bottom: 36px;
   }
   .stage-inner {
-    border-radius: 16px;
+    border-radius: 0;
     max-width: calc(100vw - 18px);
     min-height: auto;
-  }
-  .stage-inner::before {
-    left: 26px;
-  }
-  .stage-inner::after {
-    left: 22px;
-    top: 80px;
   }
   .split,
   .split.split-flip {
@@ -3035,7 +2992,7 @@ h3 {
   .loop-hero-inner,
   .cta-inner {
     max-width: none;
-    padding-left: 46px;
+    padding-left: 20px;
     padding-right: 16px;
     padding-top: 22px;
     padding-bottom: 22px;
@@ -3048,14 +3005,15 @@ h3 {
 /* SenzaiLoopTransition Styles */
 .loop-transition-outer {
   width: 100%;
-  margin-top: 60px;
+  margin-top: 48px;
 }
 
 .loop-transition-sticky {
   position: sticky;
-  top: 100px;
-  height: 600px;
-  overflow: hidden;
+  top: 80px;
+  /* exactly fits: card row (72px) + breathing room + nav end state */
+  height: 260px;
+  overflow: visible;
 }
 
 .loop-transition-stage {
@@ -3066,12 +3024,13 @@ h3 {
   margin: 0 auto;
 }
 
+/* Card starts: horizontal, tight, top-left */
 .loop-transition-card {
   position: absolute;
   background: rgba(15, 34, 54, 0.65);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 10px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -3081,7 +3040,7 @@ h3 {
 
 .loop-transition-card .card-num {
   font-family: var(--f-m);
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.14em;
   color: rgba(255, 255, 255, 0.25);
   display: block;
@@ -3089,42 +3048,51 @@ h3 {
 
 .loop-transition-card .card-label {
   font-family: var(--f-d);
-  font-size: 17px;
-  font-weight: 700;
-  color: #e8f1fb;
-}
-
-.nav-item-transition {
-  position: absolute;
-  font-family: var(--f-d);
   font-size: 15px;
   font-weight: 700;
   color: #e8f1fb;
-  white-space: nowrap;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: 12px;
-  width: 130px;
+}
+
+/* ─── Sidebar nav items (end state of transition) ─────────────────────────── */
+.lt-nav-item {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   pointer-events: none;
 }
 
-.tl-line {
-  position: absolute;
-  left: 28px;
-  top: 140px;
-  width: 1px;
-  background: rgba(255, 255, 255, 0.12);
-  z-index: 5;
+.lt-nav-dot-wrap {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.tl-dot {
-  position: absolute;
-  left: 23px;
-  width: 10px;
-  height: 10px;
+.lt-nav-dot {
+  display: block;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: #fff;
-  z-index: 6;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+  background: #4db8ff;
+  box-shadow: 0 0 8px rgba(77, 184, 255, 0.7), 0 0 18px rgba(77, 184, 255, 0.3);
+}
+
+.lt-nav-label {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.35);
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.lt-nav-item--active .lt-nav-label {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 600;
 }
 
 /* ═══════════════════════════════════════════════
